@@ -145,3 +145,27 @@ document.getElementById("leadForm").addEventListener("submit", (event) => {
   success.classList.add("show");
   window.location.href = "mailto:" + CONTACT.email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
 });
+
+const sections = document.querySelectorAll("main .section");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function reveal(section) {
+  section.classList.add("is-visible");
+}
+
+if (reduceMotion || !("IntersectionObserver" in window)) {
+  sections.forEach(reveal);
+} else {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      reveal(entry.target);
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: "0px 0px -12% 0px", threshold: 0 });
+
+  sections.forEach((section) => {
+    observer.observe(section);
+    section.addEventListener("focusin", () => reveal(section));
+  });
+}
